@@ -27,11 +27,25 @@ enemyY = random.randint(50, 150)
 enemyX_change = 0.2
 enemyY_change = 40
 
+# Bullet 
+bulletImg = pygame.image.load('bullet.png')
+bulletX = 0
+bulletY = 480
+bulletX_change = 0.2
+bulletY_change = 1
+bullet_state = 'ready'   #Ready- cant see bullet on screen, Fire - Bullet is moving
+
 def player(x, y):
   screen.blit(playerImg, (x, y))
 
 def enemy(x, y):
   screen.blit(enemyImg, (x, y))
+
+def fire_bullet(x, y):
+  global bullet_state
+  bullet_state = 'fire'
+  screen.blit(bulletImg, (x + 16, y + 10))
+
 
 # Game Loop
 running = True
@@ -50,6 +64,12 @@ while running:
         playerX_change -= 0.3
       if event.key == pygame.K_d:
         playerX_change += 0.3
+      if event.key == pygame.K_SPACE:
+        if bullet_state is 'ready':
+          # gets current x coordinate of player 
+          bulletX = playerX
+          fire_bullet(bulletX, bulletY)
+
     if event.type == pygame.KEYUP:
       if event.key == pygame.K_a or event.key == pygame.K_d:
         playerX_change = 0
@@ -72,6 +92,15 @@ while running:
     enemyX_change = -0.2
     enemyY += enemyY_change
 
+  # Bullet movement
+  if bulletY <= 0:
+    bulletY = 480
+    bullet_state = 'ready'
+
+  if bullet_state == 'fire':
+    fire_bullet(bulletX, bulletY)
+    bulletY -= bulletY_change
+  
   player(playerX, playerY)
   enemy(enemyX, enemyY)
   pygame.display.update()
